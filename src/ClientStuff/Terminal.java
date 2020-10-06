@@ -1,6 +1,7 @@
 package ClientStuff;
 
 import Application.AddWindowManager;
+import Application.Locale.Localizator;
 import Application.SceneController;
 import Application.UpdateWindowManager;
 import CityStructure.City;
@@ -12,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
@@ -22,10 +24,7 @@ import org.apache.commons.lang3.SerializationException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Terminal implements WindowActivator {
@@ -62,6 +61,7 @@ public class Terminal implements WindowActivator {
     public TableColumn<City, Double> y_column;
     public TableColumn<City, Float> x_column;
     public Tab visualisation_tab;
+    public Canvas visualisation_canvas;
 
     private Client client;
     private Scanner scanner = new Scanner(System.in);
@@ -78,6 +78,11 @@ public class Terminal implements WindowActivator {
     private ObservableList<City> observableList = FXCollections.observableArrayList();
     CityTree collectionToShow;
     private String FILTER = "";
+    private transient Locale currentLocale = Localizator.DEFAULT;
+    private String invalidID = "Invalid ID";
+    private String wrongBDFormat = "Wrong birthday format";
+    private String enterFilter = "Enter filter";
+    private String serverUnreachable = "Server unreachable";
 
     public Terminal(User user) {
         this.user = user;
@@ -235,7 +240,31 @@ public class Terminal implements WindowActivator {
 
     @FXML
     public void changeLanguage(ActionEvent actionEvent) {
+        Object menuItem = actionEvent.getSource();
+        ResourceBundle newBundle = null;
+        if (change_ru.equals(menuItem)){
+            currentLocale = Localizator.RUSSIA_RUSSIA;
+        }else if (change_cz.equals(menuItem)){
+            currentLocale = Localizator.CZECH_CZECH;
+        }else if (change_en.equals(menuItem)){
+            currentLocale = Localizator.ENGLISH_CANADA;
+        }else if (change_hr.equals(menuItem)){
+            currentLocale = Localizator.CROATIAN_CROATIA;
+        }
+        Locale.setDefault(currentLocale);
+        changeLanguage();
+    }
 
+    public void changeLanguage(){
+        ResourceBundle newBundle = Localizator.changeLocale("Application.Locale.MainWindow.MainResources", Locale.getDefault());
+
+        invalidID = (String) newBundle.getObject("Invalid ID");
+        wrongBDFormat = (String) newBundle.getObject("Wrong birthday format");
+        enterFilter = (String) newBundle.getObject("Enter filter");
+        serverUnreachable = (String) newBundle.getObject("Server unreachable");
+        logout_button.setText((String) newBundle.getObject("Logout"));
+        table_tab.setText((String) newBundle.getObject("Table"));
+        visualisation_tab.setText((String) newBundle.getObject("Visualisation"));
     }
 
     @FXML
@@ -302,7 +331,7 @@ public class Terminal implements WindowActivator {
                     smallStage.show();
                 }
             }catch (NumberFormatException | NullPointerException e){
-                makeAlert("Invalid id", "Invalid id");
+                makeAlert(invalidID, invalidID);
             }
 
         }else {
@@ -318,7 +347,7 @@ public class Terminal implements WindowActivator {
                 client.writeCommand(command);
                 client.makeNotification("Remove by id", client.getRespond().getMsg());
             }catch (NumberFormatException | NullPointerException e){
-                makeAlert("Invalid ID", "Invalid ID");
+                makeAlert(invalidID, invalidID);
             }
         }else {
             logout();
@@ -339,9 +368,12 @@ public class Terminal implements WindowActivator {
     @FXML
     public void command_execute_script_execute(ActionEvent actionEvent) {
         if(serverFlag) {
-            command.setEverything("execute_script", makeTextDialogue("Execute script", "Введите имя скрипта"));
-            client.writeCommand(command);
-            client.makeNotification("Execute script", client.getRespond().getMsg());
+            String temp = makeTextDialogue("Execute script", "Введите имя скрипта");
+            if (temp != null) {
+                command.setEverything("execute_script", temp);
+                client.writeCommand(command);
+                client.makeNotification("Execute script", client.getRespond().getMsg());
+            }
         }else {
             logout();
         }
@@ -408,7 +440,9 @@ public class Terminal implements WindowActivator {
                 client.writeCommand(command);
                 client.makeNotification("Remove any by governor", client.getRespond().getMsg());
             } catch (ParseException e) {
-                makeAlert("Wrong birthday format", "Неправильный формат дня рождения");
+                makeAlert(wrongBDFormat, wrongBDFormat);
+            } catch (NullPointerException e){
+
             }
         }else {
             logout();
@@ -417,7 +451,11 @@ public class Terminal implements WindowActivator {
 
     @FXML
     public void command_filter_name_execute(ActionEvent actionEvent) {
-        FILTER = makeTextDialogue("Filter starts with name", "Enter filter");
+        String tempString = makeTextDialogue("Filter starts with name", enterFilter);
+        if (tempString!=null){
+            FILTER = tempString;
+        }
+
     }
 
     @FXML
@@ -432,7 +470,7 @@ public class Terminal implements WindowActivator {
 
 
     public void logout() {
-        makeAlert("Server unreachable", "");
+        makeAlert(serverUnreachable, "");
         client.getMainStage().setScene(sceneController.getScene("Connection"));
         client.getMainStage().setWidth(300);
         client.getMainStage().setHeight(371);
@@ -443,6 +481,7 @@ public class Terminal implements WindowActivator {
 
     @FXML
     public void initialize() {
+        changeLanguage();
         username_text.setText(username);
         client.writeCommand(updater);
         cityTree = (CityTree) client.getRespond().getSecondParameter();
@@ -477,4 +516,5 @@ public class Terminal implements WindowActivator {
         y_column.setCellValueFactory(new PropertyValueFactory<City, Double>("y"));
         main_table.setItems(observableList);
     }
+
 }
