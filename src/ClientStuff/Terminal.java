@@ -265,7 +265,7 @@ public class Terminal implements WindowActivator {
         if(serverFlag) {
             Stage smallStage = new Stage();
             SceneController smallSceneController = new SceneController(smallStage);
-            AddWindowManager addWindowManager = new AddWindowManager(this.user, smallStage);
+            AddWindowManager addWindowManager = new AddWindowManager(this.user, smallStage, "add");
             smallSceneController.loadWithController(addWindowManager, "Add city", "/Application/FXMLs/create_city_window.fxml");
             smallStage.setScene(smallSceneController.getScene("Add city"));
             smallStage.setResizable(false);
@@ -349,12 +349,40 @@ public class Terminal implements WindowActivator {
 
     @FXML
     public void command_add_if_max_execute(ActionEvent actionEvent) {
-
+        if(serverFlag) {
+            Stage smallStage = new Stage();
+            SceneController smallSceneController = new SceneController(smallStage);
+            AddWindowManager addWindowManager = new AddWindowManager(this.user, smallStage, "add_if_max");
+            smallSceneController.loadWithController(addWindowManager, "Add city if max", "/Application/FXMLs/create_city_window.fxml");
+            smallStage.setScene(smallSceneController.getScene("Add city if max"));
+            smallStage.setResizable(false);
+            smallStage.setTitle("Add city if max");
+            smallStage.setHeight(450);
+            smallStage.setWidth(350);
+            smallStage.show();
+            smallStage.setOnCloseRequest(event -> smallSceneController.removeScene("Add city if max"));
+        }else {
+            logout();
+        }
     }
 
     @FXML
     public void command_remove_lower_execute(ActionEvent actionEvent) {
-
+        if(serverFlag) {
+            Stage smallStage = new Stage();
+            SceneController smallSceneController = new SceneController(smallStage);
+            AddWindowManager addWindowManager = new AddWindowManager(this.user, smallStage, "remove_lower");
+            smallSceneController.loadWithController(addWindowManager, "Remove lower", "/Application/FXMLs/create_city_window.fxml");
+            smallStage.setScene(smallSceneController.getScene("Remove lower"));
+            smallStage.setResizable(false);
+            smallStage.setTitle("Remove lower");
+            smallStage.setHeight(450);
+            smallStage.setWidth(350);
+            smallStage.show();
+            smallStage.setOnCloseRequest(event -> smallSceneController.removeScene("Remove lower"));
+        }else {
+            logout();
+        }
     }
 
     @FXML

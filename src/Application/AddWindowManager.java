@@ -54,12 +54,15 @@ public class AddWindowManager implements WindowActivator {
     private Command command = new Command();
     private City city = new City();
     private Stage currentStage;
+    private String command_name;
 
-    public AddWindowManager(User user, Stage stage){
+    public AddWindowManager(User user, Stage stage, String command_name){
+        this.command_name = command_name;
         this.user = user;
         this.client = user.getClient();
         this.currentStage = stage;
         command.setUser(this.user);
+        city.setOwner(user.getLogin());
     }
 
     @FXML
@@ -82,11 +85,16 @@ public class AddWindowManager implements WindowActivator {
                         if (area > 0){
                             long metersAboveSeaLevel = Long.parseLong(meters_above_sealevel_field.getText());
                             long carcode = Long.parseLong(carcode_field.getText());
-                            if (carcode < 1000 && carcode > 0){
+                            if (carcode < 1000 && carcode > 0) {
                                 LocalDate establishment_date = est_date.getValue();
                                 Date birthday = Date.from(human_birthday_field.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                                city.setCity(name, new Coordinates(x, y), area, population, metersAboveSeaLevel, establishment_date, carcode, SOF_field.getValue(), new Human(birthday));
-                                return true;
+                                if (SOF_field.getValue()!= null) {
+                                    city.setCity(name, new Coordinates(x, y), area, population, metersAboveSeaLevel, establishment_date, carcode, SOF_field.getValue(), new Human(birthday));
+                                    return true;
+                                } else{
+                                    makeAlert("Null standart of living", "Null standart of living");
+                                    return false;
+                                }
                             }else {
                                 makeAlert("Invalid carcode", "Carcode should be from 0 to 1000");
                                 return false;
@@ -119,7 +127,7 @@ public class AddWindowManager implements WindowActivator {
     @FXML
     public void ok_button_clicked(ActionEvent actionEvent) {
         if (check_fields()){
-            command.setEverything("add", city);
+            command.setEverything(command_name, city);
             client.writeCommand(command);
             makeNotification("Add  city", client.getRespond().getMsg());
             currentStage.close();

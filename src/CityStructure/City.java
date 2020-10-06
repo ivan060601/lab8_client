@@ -184,6 +184,10 @@ public class City implements Comparable<City>, Serializable {
         return owner;
     }
 
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
     public Float getX(){
         return coordinates.getX();
     }
