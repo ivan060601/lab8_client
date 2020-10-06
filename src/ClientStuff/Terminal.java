@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -83,6 +84,7 @@ public class Terminal implements WindowActivator {
     private String wrongBDFormat = "Wrong birthday format";
     private String enterFilter = "Enter filter";
     private String serverUnreachable = "Server unreachable";
+    private final Image image = new Image("Application/isu_naelsya.png");
 
     public Terminal(User user) {
         this.user = user;
@@ -515,6 +517,8 @@ public class Terminal implements WindowActivator {
         x_column.setCellValueFactory(new PropertyValueFactory<City, Float>("x"));
         y_column.setCellValueFactory(new PropertyValueFactory<City, Double>("y"));
         main_table.setItems(observableList);
+
+        visualisation_canvas.getGraphicsContext2D().drawImage(image, 0, 0);
     }
 
 }
