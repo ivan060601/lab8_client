@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="515.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar fx:id="lang_changer" layoutX="17.0" layoutY="19.0" prefHeight="26.0" prefWidth="122.0">
+         <menus>
+            <Menu mnemonicParsing="false" text="Language">
+               <items>
+                  <MenuItem fx:id="change_ru" mnemonicParsing="false" onAction="#changeLanguage" text="Русский ru_RU" />
+                  <MenuItem fx:id="change_cz" mnemonicParsing="false" onAction="#changeLanguage" text="Čeština cz_CZ" />
+                  <MenuItem fx:id="change_hr" mnemonicParsing="false" onAction="#changeLanguage" text="Hrvatski hr_HR" />
+                  <MenuItem fx:id="change_en" mnemonicParsing="false" onAction="#changeLanguage" text="English en_CA" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <VBox layoutX="17.0" layoutY="62.0" prefHeight="448.0" prefWidth="122.0">
+         <children>
+            <Button fx:id="command_help" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_help_execute" prefHeight="26.0" prefWidth="200.0" text="Help" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_info" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_info_execute" prefHeight="26.0" prefWidth="170.0" text="Info" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_add" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_add_execute" prefHeight="26.0" prefWidth="170.0" text="Add" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_update" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_update_execute" prefHeight="26.0" prefWidth="169.0" text="Update" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_remove" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_remove_execute" prefHeight="26.0" prefWidth="138.0" text="Remove" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_clear" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_clear_execute" prefHeight="26.0" prefWidth="163.0" text="Clear" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_execute_script" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_execute_script_execute" prefHeight="26.0" prefWidth="185.0" text="Execute script" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_add_if_max" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_add_if_max_execute" prefHeight="26.0" prefWidth="135.0" text="Add if max" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_remove_lower" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_remove_lower_execute" prefHeight="26.0" prefWidth="130.0" text="Remove_lower" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_history" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_history_execute" prefHeight="26.0" prefWidth="130.0" text="History" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_remove_any_by_governor" alignment="CENTER" contentDisplay="CENTER" lineSpacing="2.0" mnemonicParsing="false" onAction="#command_remove_any_by_governor_execute" prefHeight="58.0" prefWidth="122.0" text="Remove any by governor" textAlignment="CENTER" wrapText="true">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+            <Button fx:id="command_filter_name" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#command_filter_name_execute" prefHeight="58.0" prefWidth="122.0" text="Filter &quot;name starts with&quot;" textAlignment="CENTER" wrapText="true">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+      <TabPane layoutX="164.0" layoutY="19.0" prefHeight="464.0" prefWidth="719.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab fx:id="table_tab" text="Таблица">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="main_table" prefHeight="437.0" prefWidth="719.0">
+                          <columns>
+                            <TableColumn fx:id="id_column" prefWidth="50.0" text="ID" />
+                            <TableColumn fx:id="name_column" prefWidth="90.0" text="Name" />
+                              <TableColumn fx:id="population_column" prefWidth="75.0" text="Population" />
+                              <TableColumn prefWidth="50.0" text="X" fx:id="x_column" />
+                              <TableColumn fx:id="y_column" prefWidth="50.0" text="Y" />
+                              <TableColumn fx:id="area_column" prefWidth="75.0" text="Area" />
+                              <TableColumn fx:id="carcode_column" prefWidth="75.0" text="Carcode" />
+                              <TableColumn fx:id="est_column" prefWidth="90.0" text="Eestablishment вate" />
+                              <TableColumn fx:id="sof_column" prefWidth="85.0" text="Standard of living" />
+                              <TableColumn fx:id="owner_column" prefWidth="75" text="Owner" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="visualisation_tab" text="Визуализация">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <FlowPane layoutX="738.0" layoutY="14.0" prefHeight="36.0" prefWidth="147.0">
+         <children>
+            <Text fx:id="username_text" strokeType="OUTSIDE" strokeWidth="0.0" text="user_name">
+               <FlowPane.margin>
+                  <Insets left="7.0" top="7.0" />
+               </FlowPane.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Button fx:id="logout_button" mnemonicParsing="false" onAction="#logout" text="Выйти">
+               <FlowPane.margin>
+                  <Insets left="7.0" top="7.0" />
+               </FlowPane.margin>
+            </Button>
+         </children>
+      </FlowPane>
+   </children>
+</AnchorPane>

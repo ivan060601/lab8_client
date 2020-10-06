@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="371.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox layoutX="50.0" layoutY="86.0" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Text fx:id="text_login" strokeType="OUTSIDE" strokeWidth="0.0" text="Логин">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </Text>
+            <TextField id="ip_field" fx:id="login_field" />
+            <Text fx:id="text_pass" strokeType="OUTSIDE" strokeWidth="0.0" text="Пароль">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <PasswordField fx:id="pass_field" />
+            <HBox alignment="CENTER" prefHeight="34.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <Button id="connect_button" fx:id="connect_button" alignment="CENTER" mnemonicParsing="false" onAction="#button_connect_clicked" text="Войти" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="register_button" mnemonicParsing="false" onAction="#button_register_clicked" text="Зарегистрироваться" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <MenuBar fx:id="lang_changer" layoutX="14.0" layoutY="14.0">
+         <menus>
+            <Menu mnemonicParsing="false" text="Language">
+               <items>
+                  <MenuItem fx:id="change_ru" mnemonicParsing="false" onAction="#changeLanguage" text="Русский ru_RU" />
+                  <MenuItem fx:id="change_cz" mnemonicParsing="false" onAction="#changeLanguage" text="Čeština cz_CZ" />
+                  <MenuItem fx:id="change_hr" mnemonicParsing="false" onAction="#changeLanguage" text="Hrvatski hr_HR" />
+                  <MenuItem fx:id="change_en" mnemonicParsing="false" onAction="#changeLanguage" text="English en_CA" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+   </children>
+</AnchorPane>
