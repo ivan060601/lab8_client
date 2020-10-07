@@ -29,6 +29,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Terminal implements WindowActivator {
+
+    //Все переменные, связанные с интерфейсом
     @FXML
     public Text username_text;
     public Button logout_button;
@@ -64,6 +66,7 @@ public class Terminal implements WindowActivator {
     public Tab visualisation_tab;
     public Canvas visualisation_canvas;
 
+    //Переменные для исполнения команд
     private Client client;
     private Scanner scanner = new Scanner(System.in);
     private String newLine = new String();
@@ -76,6 +79,7 @@ public class Terminal implements WindowActivator {
     private String username;
     private CityTree cityTree;
     private User user;
+    private TreeSet<Long> IDSet = new TreeSet<>();
     private ObservableList<City> observableList = FXCollections.observableArrayList();
     CityTree collectionToShow;
     private String FILTER = "";
@@ -84,7 +88,10 @@ public class Terminal implements WindowActivator {
     private String wrongBDFormat = "Wrong birthday format";
     private String enterFilter = "Enter filter";
     private String serverUnreachable = "Server unreachable";
-    private final Image image = new Image("Application/isu_naelsya.png");
+    //private final Image image = new Image("Application/isu_naelsya.png");
+
+    //Все переменные для окна визуализации
+
 
     public Terminal(User user) {
         this.user = user;
@@ -321,7 +328,10 @@ public class Terminal implements WindowActivator {
                             .collect(Collectors.toCollection(ArrayList::new));
             try {
                 long id = Long.parseLong(makeTextDialogue("Update by id","Enter id"));
-                ArrayList<City> idFiltered = cityTree_byOwner.stream().filter(city1 -> city1.getId() == id).collect(Collectors.toCollection(ArrayList::new));
+                ArrayList<City> idFiltered = cityTree_byOwner
+                        .stream()
+                        .filter(city1 -> city1.getId() == id)
+                        .collect(Collectors.toCollection(ArrayList::new));
                 if (idFiltered.size() > 0){
                     UpdateWindowManager updateWindowManager = new UpdateWindowManager(user, idFiltered.get(0), smallStage);
                     smallSceneController.loadWithController(updateWindowManager, "Update city", "/Application/FXMLs/create_city_window.fxml");
@@ -482,7 +492,7 @@ public class Terminal implements WindowActivator {
     }
 
     @FXML
-    public void initialize() {
+    public void initialize() throws InterruptedException {
         changeLanguage();
         username_text.setText(username);
         client.writeCommand(updater);
@@ -490,13 +500,64 @@ public class Terminal implements WindowActivator {
 
         updateThreadFlag = true;
         updateThread = new Thread(() ->{
+            CityTree tempCityTree;
+            TreeSet<Long> tempIDSet = new TreeSet<>();
+
             synchronized (cityTree) {
                 while (updateThreadFlag) {
                     try {
+                        //Получили актуальный список City
                         client.writeCommand(updater);
-                        cityTree = (CityTree) client.getRespond().getSecondParameter();
+                        tempCityTree = (CityTree) client.getRespond().getSecondParameter();
+                        tempIDSet.clear();
+                        tempCityTree.stream().forEach(city -> tempIDSet.add(city.getId()));
+
+                        cityTree.removeIf(city -> (!tempIDSet.contains(city.getId())));
+
+                        //Сравниваем, поменялось ли что-то в каждом городе и меняем если это так
+                        for (City tempCity: tempCityTree){
+                            if (IDSet.contains(tempCity.getId())){
+                                //Элемент имеющейся коллекции
+                                City city = cityTree.getCityByID(tempCity.getId());
+
+                                if (!city.getName().equals(tempCity.getName())){
+                                    city.setName(tempCity.getName());
+                                }
+                                if (city.getPopulation() != (tempCity.getPopulation())){
+                                    city.setPopulation(tempCity.getPopulation());
+                                }
+                                if (!city.getCoordinates().getX().equals(tempCity.getCoordinates().getX())){
+                                    city.getCoordinates().setX(tempCity.getCoordinates().getX());
+                                }
+                                if (city.getCoordinates().getY() != (tempCity.getCoordinates().getY())){
+                                    city.getCoordinates().setY(tempCity.getCoordinates().getY());
+                                }
+                                if (city.getArea() != (tempCity.getArea())){
+                                    city.setArea(tempCity.getArea());
+                                }
+                                if (city.getMetersAboveSeaLevel() != (tempCity.getMetersAboveSeaLevel())){
+                                    city.setMetersAboveSeaLevel(tempCity.getMetersAboveSeaLevel());
+                                }
+                                if (city.getCarCode() != (tempCity.getCarCode())){
+                                    city.setCarCode(tempCity.getCarCode());
+                                }
+                                if (!city.getStandardOfLiving().equals(tempCity.getStandardOfLiving())){
+                                    city.setStandardOfLiving(tempCity.getStandardOfLiving());
+                                }
+                                if (!city.getEstablishmentDate().equals(tempCity.getEstablishmentDate())){
+                                    city.setEstablishmentDate(tempCity.getEstablishmentDate());
+                                }
+                                if (!city.getGovernor().getBirthday().equals(tempCity.getGovernor().getBirthday())){
+                                    city.getGovernor().setBirthday(tempCity.getGovernor().getBirthday());
+                                }
+                            }else {
+                                cityTree.add(tempCity);
+                            }
+                        }
+
+                        //Фильтруем коллекцию для показа в таблице по именному фильтру
                         collectionToShow = cityTree.stream().filter(city -> city.getName().startsWith(FILTER)).collect(Collectors.toCollection(CityTree::new));
-                        observableList.setAll(collectionToShow);
+                        cityTree.stream().forEach(city -> IDSet.add(city.getId()));
                         Thread.sleep(1000);
                     } catch (Exception e) {
                         serverFlag = false;
@@ -517,8 +578,12 @@ public class Terminal implements WindowActivator {
         x_column.setCellValueFactory(new PropertyValueFactory<City, Float>("x"));
         y_column.setCellValueFactory(new PropertyValueFactory<City, Double>("y"));
         main_table.setItems(observableList);
+        Thread.sleep(500);
+        observableList.setAll(collectionToShow);
 
-        visualisation_canvas.getGraphicsContext2D().drawImage(image, 0, 0);
+
+        System.out.println(visualisation_canvas.getHeight());
+        System.out.println(visualisation_canvas.getWidth());
     }
 
 }
