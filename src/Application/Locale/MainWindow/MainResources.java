@@ -10,7 +10,8 @@ public class MainResources extends java.util.ListResourceBundle {
             {"Server unreachable", "Server unreachable"},
             {"Table", "Table"},
             {"Visualisation", "Visualisation"},
-            {"Logout", "Logout"}
+            {"Logout", "Logout"},
+            {"No available cities to show", "No available cities to show"}
             // ENDING OF INTERNATIONALIZATION
     };
 

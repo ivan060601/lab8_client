@@ -10,7 +10,8 @@ public class MainResources_ru extends java.util.ListResourceBundle {
             {"Server unreachable", "Сервер недоступен"},
             {"Table", "Таблица"},
             {"Visualisation", "Визуализация"},
-            {"Logout", "Выход"}
+            {"Logout", "Выход"},
+            {"No available cities to show", "Нет городов для показа удовлетворяющих условиям"}
             // ENDING OF INTERNATIONALIZATION
     };
 

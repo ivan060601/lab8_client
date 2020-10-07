@@ -10,7 +10,8 @@ public class MainResources_cz_CZ extends java.util.ListResourceBundle {
             {"Server unreachable", "Server není k dispozici"},
             {"Table", "Tabulka"},
             {"Visualisation", "Vizualizace"},
-            {"Logout", "Výstup"}
+            {"Logout", "Výstup"},
+            {"No available cities to show", "Žádná města pro zobrazení splňujících podmínek"}
             // ENDING OF INTERNATIONALIZATION
     };
 

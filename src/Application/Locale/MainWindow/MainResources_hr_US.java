@@ -7,7 +7,11 @@ public class MainResources_hr_US extends java.util.ListResourceBundle {
             {"Invalid ID", "Pogrešno ID"},
             {"Wrong birthday format", "Pogrešan format rođendana"},
             {"Enter filter", "Unesite filtar"},
-            {"Server unreachable", "Poslužitelj nije dostupan"}
+            {"Server unreachable", "Poslužitelj nije dostupan"},
+            {"Table", "Tablica"},
+            {"Visualisation", "Vizualizacija"},
+            {"Logout", "Izlaz"},
+            {"No available cities to show", "Nema gradova za prikaz zadovoljavajućih uvjeta"}
             // ENDING OF INTERNATIONALIZATION
     };
 

@@ -10,7 +10,8 @@ public class MainResources_hr extends java.util.ListResourceBundle {
             {"Server unreachable", "Poslužitelj nije dostupan"},
             {"Table", "Tablica"},
             {"Visualisation", "Vizualizacija"},
-            {"Logout", "Izlaz"}
+            {"Logout", "Izlaz"},
+            {"No available cities to show", "Nema gradova za prikaz zadovoljavajućih uvjeta"}
             // ENDING OF INTERNATIONALIZATION
     };
 
