@@ -56,69 +56,6 @@ public class User implements Serializable, WindowActivator {
         this.mainStage = client.getMainStage();
         mainStage.setWidth(300);
         mainStage.setHeight(371);
-        /*
-        MODE mode = getMode();
-        String l;
-        String  p;
-        boolean logged = false;
-
-        if (mode == MODE.LOGIN){
-            while (!logged) {
-                System.out.println("Enter login:");
-                l = scanner.nextLine();
-                System.out.println("Enter password:");
-                p = scanner.nextLine();
-                String[] params = new String[]{l, p};
-                client.writeCommand(new Command<>("login", params));
-                String msg = client.getRespond().getMsg();
-                if (msg.equals("Logged in successfully")){
-                    logged = true;
-                    System.out.println("Welcome, " + l);
-                }else {
-                    System.out.println(msg);
-                }
-            }
-        }else {
-            while (!logged) {
-                System.out.println("Enter login:");
-                l = scanner.nextLine();
-                System.out.println("Enter password:");
-                p = scanner.nextLine();
-                String[] params = new String[]{l, p};
-                client.writeCommand(new Command<>("register", params));
-                String msg = client.getRespond().getMsg();
-                if (msg.equals("Registration is successful")) {
-                    logged = true;
-                    System.out.println("Welcome, " + l);
-                } else {
-                    System.out.println(msg);
-                }
-            }
-        }*/
-    }
-
-    private enum MODE{
-        REGISTER,
-        LOGIN
-    }
-
-    private static MODE getMode(){
-        MODE mode = null;
-        System.out.println("Type \"1\" if you want to login, \"2\" if you want to register");
-        while (mode == null) {
-            switch (scanner.nextLine().trim()) {
-                case "1":
-                    mode = MODE.LOGIN;
-                    break;
-                case "2":
-                    mode = MODE.REGISTER;
-                    break;
-                default:
-                    System.out.println("Wrong value entered. Try another one");
-                    break;
-            }
-        }
-        return mode;
     }
 
     public String getLogin() {

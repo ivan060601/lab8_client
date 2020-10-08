@@ -64,51 +64,6 @@ public class Client implements WindowActivator{
         this.sceneController = sceneController;
         mainStage.setWidth(300);
         mainStage.setHeight(371);
-        /*
-        System.out.println("Enter a server address");
-        String add = "";
-
-        try {
-
-            while (add == "") {
-                String a = scanner.nextLine();
-                //if (isRussian(a)){
-                //    System.out.println("Entered server name contains inappropriate symbols");
-                //}else {
-                    add = a;
-                    System.out.println("Server address is now: " + add);
-                //}
-            }
-
-            System.out.println("Enter a port");
-            int port = -1;
-
-            while (port == -1) {
-                try {
-                    int p = Integer.valueOf(scanner.nextLine().trim());
-                    if (p < 0 || p > 65535) {
-                        System.out.println("Wrong port was entered");
-                    } else {
-                        port = p;
-                        System.out.println("Port is now: " + port);
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Entered value is not a number");
-                }
-            }
-
-            inetSocket = new InetSocketAddress(add, port);
-            datagramSocket = new DatagramSocket();
-            datagramSocket.setSoTimeout(3000);
-            System.out.println("You can start working");
-
-        }catch (NoSuchElementException e){
-            System.out.println("End of input");
-            System.exit(0);
-        } catch (SocketException e) {
-            System.out.println("Socket unreachable");
-            System.exit(0);
-        }*/
     }
 
     /**
