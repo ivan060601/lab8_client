@@ -9,6 +9,7 @@ import CityStructure.City;
 import CityStructure.CityTree;
 import CityStructure.Human;
 import CityStructure.StandardOfLiving;
+import javafx.beans.Observable;
 import javafx.collections.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -21,6 +22,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import org.apache.commons.lang3.SerializationException;
 
 import java.awt.geom.Arc2D;
@@ -100,7 +102,16 @@ public class Terminal implements WindowActivator {
     private double Y_MAX_COORDINATE = 0;
     private float X_MIN_COORDINATE = 0;
     private double Y_MIN_COORDINATE = 0;
-    private ObservableList<SmartCoordinates> coordinatesObservableList = FXCollections.observableArrayList();
+    private ObservableList<SmartCoordinates> coordinatesObservableList = FXCollections.observableArrayList(
+        new Callback<SmartCoordinates, Observable[]>() {
+            @Override
+            public Observable[] call(SmartCoordinates param) {
+                return new Observable[]{
+                        param.getYProperty(),
+                        param.getXProperty()
+                };
+            }
+    });
 
     public Terminal(User user) {
         this.user = user;
@@ -514,18 +525,20 @@ public class Terminal implements WindowActivator {
             @Override
             public void onChanged(Change<? extends SmartCoordinates> c) {
                 while (c.next()) {
-                    if (c.wasAdded()) {
-                        for (SmartCoordinates sc : c.getAddedSubList()) {
-                            System.out.println(sc.getId() + " was added");
+                    if (c.wasUpdated()) {
+                        for (int i = c.getFrom(); i < c.getTo(); ++i) {
+                            System.out.println(coordinatesObservableList.get(i).getId() + " was updated");
                         }
-                    }
-                    if (c.wasRemoved()) {
+                    }else if (c.wasRemoved()) {
                         for (SmartCoordinates sc : c.getRemoved()) {
+                            //Уберем отображение объекта
                             System.out.println(sc.getId() + " was removed");
                         }
-                    }
-                    if (c.wasUpdated()) {
-                        
+                    }else if (c.wasAdded()) {
+                        for (SmartCoordinates sc : c.getAddedSubList()) {
+                            //Нарисуем объект с нуля
+                            System.out.println(sc.getId() + " was added");
+                        }
                     }
                 }
             }
@@ -572,16 +585,13 @@ public class Terminal implements WindowActivator {
                                 if (!Float.valueOf(city.getX()).equals(Float.valueOf(tempCity.getX())) && !Double.valueOf(city.getY()).equals(Double.valueOf(tempCity.getY()))){
                                     city.getCoordinates().setX(tempCity.getX());
                                     city.getCoordinates().setY(tempCity.getY());
-                                    System.out.println("Changed XY");
-
+                                    coordinatesObservableList.get(getIndexByID(city.getId())).setXY(tempCity.getX(), tempCity.getY());
                                 }else if (!Float.valueOf(city.getX()).equals(Float.valueOf(tempCity.getX()))){
                                     city.getCoordinates().setX(tempCity.getX());
-                                    System.out.println("Changed X");
-
+                                    coordinatesObservableList.get(getIndexByID(city.getId())).setX(tempCity.getX());
                                 }else if (!Double.valueOf(city.getY()).equals(Double.valueOf(tempCity.getY()))){
                                     city.getCoordinates().setY(tempCity.getY());
-                                    System.out.println("Changed Y");
-
+                                    coordinatesObservableList.get(getIndexByID(city.getId())).setY(tempCity.getY());
                                 }
 
                                 if (city.getArea() != (tempCity.getArea())){
@@ -622,7 +632,6 @@ public class Terminal implements WindowActivator {
                 }
             }
         } ){{start();}};
-
 
         drawThread = new Thread(() -> {
             while (updateThreadFlag) {

@@ -1,24 +1,28 @@
 package Application;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.scene.paint.Color;
 
 public class SmartCoordinates {
     private long id;
-    private float x;
-    private double y;
+    private FloatProperty x;
+    private DoubleProperty y;
     private Color color;
-    private boolean isDrawn = false;
+    private boolean redraw = false;
 
     public SmartCoordinates(float x, double y, String name) {
-        this.x = x;
-        this.y = y;
+        this.x = new SimpleFloatProperty(x);
+        this.y = new SimpleDoubleProperty(y);
         makeColour(name);
     }
 
     public SmartCoordinates(long id, float x, double y, String name) {
         this.id = id;
-        this.x = x;
-        this.y = y;
+        this.x = new SimpleFloatProperty(x);
+        this.y = new SimpleDoubleProperty(y);
         makeColour(name);
     }
 
@@ -30,20 +34,28 @@ public class SmartCoordinates {
         this.color = Color.hsb(h,s,v);
     }
 
-    public float getX() {
+    public FloatProperty getXProperty() {
         return x;
     }
 
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public double getY() {
+    public DoubleProperty getYProperty() {
         return y;
     }
 
+    public float getX() {
+        return x.get();
+    }
+
+    public void setX(float x) {
+        this.x.set(x);
+    }
+
+    public double getY() {
+        return y.get();
+    }
+
     public void setY(double y) {
-        this.y = y;
+        this.y.set(y);
     }
 
     public Color getColor() {
@@ -54,12 +66,12 @@ public class SmartCoordinates {
         this.color = color;
     }
 
-    public boolean isDrawn() {
-        return isDrawn;
+    public boolean toRedraw() {
+        return redraw;
     }
 
-    public void setDrawn(boolean drawn) {
-        isDrawn = drawn;
+    public void setRedraw(boolean redraw) {
+        this.redraw = redraw;
     }
 
     public long getId() {
@@ -71,7 +83,7 @@ public class SmartCoordinates {
     }
 
     public void setXY(float x, double y){
-        this.x = x;
-        this.y = y;
+        this.x.set(x);
+        this.y.set(y);
     }
 }
