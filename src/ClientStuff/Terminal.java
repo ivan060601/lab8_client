@@ -3,13 +3,13 @@ package ClientStuff;
 import Application.AddWindowManager;
 import Application.Locale.Localizator;
 import Application.SceneController;
+import Application.SmartCoordinates;
 import Application.UpdateWindowManager;
 import CityStructure.City;
 import CityStructure.CityTree;
 import CityStructure.Human;
 import CityStructure.StandardOfLiving;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,10 +18,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.commons.lang3.SerializationException;
 
+import java.awt.geom.Arc2D;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -73,6 +75,7 @@ public class Terminal implements WindowActivator {
     private Command command = new Command();
     private Command updater = new Command();
     private Thread updateThread;
+    private Thread drawThread;
     private boolean updateThreadFlag;
     private boolean serverFlag = true;
     private SceneController sceneController = client.getSceneController();
@@ -81,7 +84,6 @@ public class Terminal implements WindowActivator {
     private User user;
     private TreeSet<Long> IDSet = new TreeSet<>();
     private ObservableList<City> observableList = FXCollections.observableArrayList();
-    CityTree collectionToShow;
     private String FILTER = "";
     private transient Locale currentLocale = Localizator.DEFAULT;
     private String invalidID = "Invalid ID";
@@ -91,7 +93,15 @@ public class Terminal implements WindowActivator {
     //private final Image image = new Image("Application/isu_naelsya.png");
 
     //Все переменные для окна визуализации
-
+    private String noCities = "No available cities to show";
+    private double CANVAS_HEIGHT;
+    private double CANVAS_WIDTH;
+    private float X_MAX_COORDINATE = 0;
+    private double Y_MAX_COORDINATE = 0;
+    private float X_MIN_COORDINATE = 0;
+    private double Y_MIN_COORDINATE = 0;
+    private ObservableMap<Long, SmartCoordinates> collectionToDraw = FXCollections.observableHashMap();
+    private ObservableList<SmartCoordinates> coordinatesObservableList = FXCollections.observableArrayList();
 
     public Terminal(User user) {
         this.user = user;
@@ -103,6 +113,7 @@ public class Terminal implements WindowActivator {
         updater.setEverything("show", null);
     }
 
+    /*
     public void start() {
         try {
             while (true) {
@@ -245,7 +256,7 @@ public class Terminal implements WindowActivator {
         }
 
         return toReturn;
-    }
+    }*/
 
     @FXML
     public void changeLanguage(ActionEvent actionEvent) {
@@ -268,6 +279,7 @@ public class Terminal implements WindowActivator {
         ResourceBundle newBundle = Localizator.changeLocale("Application.Locale.MainWindow.MainResources", Locale.getDefault());
 
         invalidID = (String) newBundle.getObject("Invalid ID");
+        noCities = (String) newBundle.getObject("No available cities to show");
         wrongBDFormat = (String) newBundle.getObject("Wrong birthday format");
         enterFilter = (String) newBundle.getObject("Enter filter");
         serverUnreachable = (String) newBundle.getObject("Server unreachable");
@@ -341,6 +353,8 @@ public class Terminal implements WindowActivator {
                     smallStage.setHeight(450);
                     smallStage.setWidth(350);
                     smallStage.show();
+                }else {
+                    makeNotification("City not found", "City with such ID was not found");
                 }
             }catch (NumberFormatException | NullPointerException e){
                 makeAlert(invalidID, invalidID);
@@ -495,8 +509,47 @@ public class Terminal implements WindowActivator {
     public void initialize() throws InterruptedException {
         changeLanguage();
         username_text.setText(username);
-        client.writeCommand(updater);
-        cityTree = (CityTree) client.getRespond().getSecondParameter();
+        cityTree = new CityTree();
+
+        coordinatesObservableList.addListener(new ListChangeListener<SmartCoordinates>() {
+            @Override
+            public void onChanged(Change<? extends SmartCoordinates> c) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        for (SmartCoordinates sc : c.getAddedSubList()) {
+                            System.out.println(sc.getId() + " was added");
+                        }
+                    }
+                    if (c.wasRemoved()) {
+                        for (SmartCoordinates sc : c.getAddedSubList()) {
+                            System.out.println(sc.getId() + " was removed");
+                        }
+                    }
+                    if (c.wasUpdated()) {
+                        for (SmartCoordinates sc : c.getAddedSubList()) {
+                            System.out.println(sc.getId() + " was updated");
+                        }
+                    }
+                }
+            }
+        });
+
+        /*
+        collectionToDraw.addListener(new MapChangeListener<Long, SmartCoordinates>() {
+            @Override
+            public void onChanged(Change<? extends Long, ? extends SmartCoordinates> change) {
+                System.out.println(change.getKey());
+            }
+        });*/
+
+
+        for (City city:cityTree){
+            //collectionToDraw.put(city.getId(), new SmartCoordinates(city.getX(), city.getY(), username));
+            coordinatesObservableList.add(new SmartCoordinates(city.getId(), city.getX(), city.getY(), username));
+        }
+
+        CANVAS_HEIGHT = visualisation_canvas.getHeight();
+        CANVAS_WIDTH = visualisation_canvas.getWidth();
 
         updateThreadFlag = true;
         updateThread = new Thread(() ->{
@@ -510,9 +563,18 @@ public class Terminal implements WindowActivator {
                         client.writeCommand(updater);
                         tempCityTree = (CityTree) client.getRespond().getSecondParameter();
                         tempIDSet.clear();
-                        tempCityTree.stream().forEach(city -> tempIDSet.add(city.getId()));
+                        tempCityTree.forEach(city -> tempIDSet.add(city.getId()));
 
                         cityTree.removeIf(city -> (!tempIDSet.contains(city.getId())));
+                        observableList.removeIf(city -> (!tempIDSet.contains(city.getId())));
+                        coordinatesObservableList.removeIf(smartCoordinates -> (!tempIDSet.contains(smartCoordinates.getId())));
+
+                        /*
+                        collectionToDraw.forEach((id, coords) -> {
+                            if (!tempIDSet.contains(id)){
+                                collectionToDraw.remove(id);
+                            }
+                        });*/
 
                         //Сравниваем, поменялось ли что-то в каждом городе и меняем если это так
                         for (City tempCity: tempCityTree){
@@ -526,12 +588,22 @@ public class Terminal implements WindowActivator {
                                 if (city.getPopulation() != (tempCity.getPopulation())){
                                     city.setPopulation(tempCity.getPopulation());
                                 }
-                                if (!city.getCoordinates().getX().equals(tempCity.getCoordinates().getX())){
-                                    city.getCoordinates().setX(tempCity.getCoordinates().getX());
+
+                                if (!Float.valueOf(city.getX()).equals(Float.valueOf(tempCity.getX())) && !Double.valueOf(city.getY()).equals(Double.valueOf(tempCity.getY()))){
+                                    city.getCoordinates().setX(tempCity.getX());
+                                    city.getCoordinates().setY(tempCity.getY());
+                                    System.out.println("Changed XY");
+                                    collectionToDraw.get(city.getId()).setXY(tempCity.getX(), tempCity.getY());
+                                }else if (!Float.valueOf(city.getX()).equals(Float.valueOf(tempCity.getX()))){
+                                    city.getCoordinates().setX(tempCity.getX());
+                                    System.out.println("Changed X");
+                                    collectionToDraw.get(city.getId()).setX(tempCity.getX());
+                                }else if (!Double.valueOf(city.getY()).equals(Double.valueOf(tempCity.getY()))){
+                                    city.getCoordinates().setY(tempCity.getY());
+                                    System.out.println("Changed Y");
+                                    collectionToDraw.get(city.getId()).setY(tempCity.getY());
                                 }
-                                if (city.getCoordinates().getY() != (tempCity.getCoordinates().getY())){
-                                    city.getCoordinates().setY(tempCity.getCoordinates().getY());
-                                }
+
                                 if (city.getArea() != (tempCity.getArea())){
                                     city.setArea(tempCity.getArea());
                                 }
@@ -552,12 +624,17 @@ public class Terminal implements WindowActivator {
                                 }
                             }else {
                                 cityTree.add(tempCity);
+                                collectionToDraw.put(tempCity.getId(), new SmartCoordinates(tempCity.getX(), tempCity.getY(), username));
+                                coordinatesObservableList.add(new SmartCoordinates(tempCity.getId(), tempCity.getX(), tempCity.getY(), username));
                             }
                         }
 
-                        //Фильтруем коллекцию для показа в таблице по именному фильтру
-                        collectionToShow = cityTree.stream().filter(city -> city.getName().startsWith(FILTER)).collect(Collectors.toCollection(CityTree::new));
-                        cityTree.stream().forEach(city -> IDSet.add(city.getId()));
+                        //Фильтруем коллекцию для показа в таблице и в визуализации по именному фильтру
+                        observableList.clear();
+                        cityTree.stream().filter(city -> city.getName().startsWith(FILTER)).collect(Collectors.toCollection(()->observableList));
+                        IDSet.clear();
+                        cityTree.forEach(city -> IDSet.add(city.getId()));
+
                         Thread.sleep(1000);
                     } catch (Exception e) {
                         serverFlag = false;
@@ -566,6 +643,22 @@ public class Terminal implements WindowActivator {
                 }
             }
         } ){{start();}};
+
+
+        drawThread = new Thread(() -> {
+            while (updateThreadFlag) {
+                if (cityTree.size() == 0) {
+                    visualisation_canvas.getGraphicsContext2D().clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                    visualisation_canvas.getGraphicsContext2D().setTextAlign(TextAlignment.CENTER);
+                    visualisation_canvas.getGraphicsContext2D().fillText( noCities, (int) CANVAS_WIDTH / 2, (int) CANVAS_HEIGHT / 2);
+                }else {
+                    X_MAX_COORDINATE = cityTree.stream().map(city -> city.getX()).max(Float::compare).get();
+                    Y_MAX_COORDINATE = cityTree.stream().map(city -> city.getY()).max(Double::compare).get();
+                    X_MIN_COORDINATE = cityTree.stream().map(city -> city.getX()).min(Float::compare).get();
+                    Y_MIN_COORDINATE = cityTree.stream().map(city -> city.getY()).min(Double::compare).get();
+                }
+            }
+        }){{start();}};
 
         id_column.setCellValueFactory(new PropertyValueFactory<City, Long>("id"));
         name_column.setCellValueFactory(new PropertyValueFactory<City, String>("name"));
@@ -578,12 +671,9 @@ public class Terminal implements WindowActivator {
         x_column.setCellValueFactory(new PropertyValueFactory<City, Float>("x"));
         y_column.setCellValueFactory(new PropertyValueFactory<City, Double>("y"));
         main_table.setItems(observableList);
-        Thread.sleep(500);
-        observableList.setAll(collectionToShow);
-
-
-        System.out.println(visualisation_canvas.getHeight());
-        System.out.println(visualisation_canvas.getWidth());
     }
 
+    public void toCanvasCoordinates(float x, double y){
+
+    }
 }

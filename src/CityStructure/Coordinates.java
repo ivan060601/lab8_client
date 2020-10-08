@@ -30,7 +30,7 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
         return this.x;
     }
 
-    public double getY(){
+    public Double getY(){
         return this.y;
     }
 

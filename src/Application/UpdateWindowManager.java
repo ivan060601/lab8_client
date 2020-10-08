@@ -51,6 +51,7 @@ public class UpdateWindowManager implements WindowActivator {
 
     private User user;
     private City city;
+    private City cityToSend = new City();
     private Client client;
     private Command command = new Command();
     private Stage currentStage;
@@ -74,9 +75,9 @@ public class UpdateWindowManager implements WindowActivator {
     @FXML
     public void ok_button_clicked(ActionEvent actionEvent) {
         if (check_fields()){
-            command.setEverything("update", city);
+            command.setEverything("update", cityToSend);
             client.writeCommand(command);
-            makeNotification("Add  city", client.getRespond().getMsg());
+            makeNotification("Update city", client.getRespond().getMsg());
             currentStage.close();
         }
     }
@@ -117,7 +118,7 @@ public class UpdateWindowManager implements WindowActivator {
                             if (carcode < 1000 && carcode > 0){
                                 LocalDate establishment_date = est_date.getValue();
                                 Date birthday = Date.from(human_birthday_field.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                                city.setCity(name, new Coordinates(x, y), area, population, metersAboveSeaLevel, establishment_date, carcode, SOF_field.getValue(), new Human(birthday));
+                                cityToSend.setCity(name, new Coordinates(x, y), area, population, metersAboveSeaLevel, establishment_date, carcode, SOF_field.getValue(), new Human(birthday));
                                 return true;
                             }else {
                                 makeAlert("Invalid carcode", "Carcode should be from 0 to 1000");
