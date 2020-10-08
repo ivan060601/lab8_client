@@ -100,7 +100,6 @@ public class Terminal implements WindowActivator {
     private double Y_MAX_COORDINATE = 0;
     private float X_MIN_COORDINATE = 0;
     private double Y_MIN_COORDINATE = 0;
-    private ObservableMap<Long, SmartCoordinates> collectionToDraw = FXCollections.observableHashMap();
     private ObservableList<SmartCoordinates> coordinatesObservableList = FXCollections.observableArrayList();
 
     public Terminal(User user) {
@@ -521,30 +520,18 @@ public class Terminal implements WindowActivator {
                         }
                     }
                     if (c.wasRemoved()) {
-                        for (SmartCoordinates sc : c.getAddedSubList()) {
+                        for (SmartCoordinates sc : c.getRemoved()) {
                             System.out.println(sc.getId() + " was removed");
                         }
                     }
                     if (c.wasUpdated()) {
-                        for (SmartCoordinates sc : c.getAddedSubList()) {
-                            System.out.println(sc.getId() + " was updated");
-                        }
+                        
                     }
                 }
             }
         });
 
-        /*
-        collectionToDraw.addListener(new MapChangeListener<Long, SmartCoordinates>() {
-            @Override
-            public void onChanged(Change<? extends Long, ? extends SmartCoordinates> change) {
-                System.out.println(change.getKey());
-            }
-        });*/
-
-
         for (City city:cityTree){
-            //collectionToDraw.put(city.getId(), new SmartCoordinates(city.getX(), city.getY(), username));
             coordinatesObservableList.add(new SmartCoordinates(city.getId(), city.getX(), city.getY(), username));
         }
 
@@ -569,13 +556,6 @@ public class Terminal implements WindowActivator {
                         observableList.removeIf(city -> (!tempIDSet.contains(city.getId())));
                         coordinatesObservableList.removeIf(smartCoordinates -> (!tempIDSet.contains(smartCoordinates.getId())));
 
-                        /*
-                        collectionToDraw.forEach((id, coords) -> {
-                            if (!tempIDSet.contains(id)){
-                                collectionToDraw.remove(id);
-                            }
-                        });*/
-
                         //Сравниваем, поменялось ли что-то в каждом городе и меняем если это так
                         for (City tempCity: tempCityTree){
                             if (IDSet.contains(tempCity.getId())){
@@ -593,15 +573,15 @@ public class Terminal implements WindowActivator {
                                     city.getCoordinates().setX(tempCity.getX());
                                     city.getCoordinates().setY(tempCity.getY());
                                     System.out.println("Changed XY");
-                                    collectionToDraw.get(city.getId()).setXY(tempCity.getX(), tempCity.getY());
+
                                 }else if (!Float.valueOf(city.getX()).equals(Float.valueOf(tempCity.getX()))){
                                     city.getCoordinates().setX(tempCity.getX());
                                     System.out.println("Changed X");
-                                    collectionToDraw.get(city.getId()).setX(tempCity.getX());
+
                                 }else if (!Double.valueOf(city.getY()).equals(Double.valueOf(tempCity.getY()))){
                                     city.getCoordinates().setY(tempCity.getY());
                                     System.out.println("Changed Y");
-                                    collectionToDraw.get(city.getId()).setY(tempCity.getY());
+
                                 }
 
                                 if (city.getArea() != (tempCity.getArea())){
@@ -624,7 +604,6 @@ public class Terminal implements WindowActivator {
                                 }
                             }else {
                                 cityTree.add(tempCity);
-                                collectionToDraw.put(tempCity.getId(), new SmartCoordinates(tempCity.getX(), tempCity.getY(), username));
                                 coordinatesObservableList.add(new SmartCoordinates(tempCity.getId(), tempCity.getX(), tempCity.getY(), username));
                             }
                         }
@@ -675,5 +654,14 @@ public class Terminal implements WindowActivator {
 
     public void toCanvasCoordinates(float x, double y){
 
+    }
+
+    private int getIndexByID(long id){
+        for (SmartCoordinates sc: coordinatesObservableList){
+            if (sc.getId() == id){
+                return coordinatesObservableList.indexOf(sc);
+            }
+        }
+        return -1;
     }
 }
