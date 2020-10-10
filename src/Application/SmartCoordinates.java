@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class SmartCoordinates {
@@ -12,6 +13,7 @@ public class SmartCoordinates {
     private DoubleProperty y;
     private Color color;
     private boolean redraw = false;
+    private Image image = new Image("/Application/Transparent.png");
 
     public SmartCoordinates(float x, double y, String name) {
         this.x = new SimpleFloatProperty(x);
@@ -85,5 +87,9 @@ public class SmartCoordinates {
     public void setXY(float x, double y){
         this.x.set(x);
         this.y.set(y);
+    }
+
+    public Image getImage() {
+        return image;
     }
 }
