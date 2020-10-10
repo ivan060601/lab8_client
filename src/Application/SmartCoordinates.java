@@ -1,10 +1,13 @@
 package Application;
 
+import javafx.application.ConditionalFeature;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
-import javafx.scene.image.Image;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 
 public class SmartCoordinates {
@@ -13,7 +16,7 @@ public class SmartCoordinates {
     private DoubleProperty y;
     private Color color;
     private boolean redraw = false;
-    private Image image = new Image("/Application/Transparent.png");
+    private Image image = new Image("/Application/Transparent_white.png");
 
     public SmartCoordinates(float x, double y, String name) {
         this.x = new SimpleFloatProperty(x);
@@ -30,10 +33,11 @@ public class SmartCoordinates {
 
     private void makeColour(String name){
         //из формулы ((Input - InputLow) / (InputHigh - InputLow)) * (OutputHigh - OutputLow) + OutputLow
-        float h = (name.hashCode() % 1000)/(999) * 360;
-        float s = 0.2f;
-        float v = 0.9f;
+        float h = (name.hashCode() % 1000) * 360/(999);
+        float s = 0.7f;
+        float v = 0.7f;
         this.color = Color.hsb(h,s,v);
+        this.image = changeColour();
     }
 
     public FloatProperty getXProperty() {
@@ -91,5 +95,20 @@ public class SmartCoordinates {
 
     public Image getImage() {
         return image;
+    }
+
+    private Image changeColour(){
+        WritableImage writableImage = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = writableImage.getPixelReader();
+        for (int i = 0; i < writableImage.getHeight(); i++) {
+            for (int j = 0; j < writableImage.getWidth(); j++) {
+                Color c = pixelReader.getColor(j, i);
+                if (c.getRed() > 0 || c.getGreen() > 0 || c.getBlue() > 0) {
+                    pixelWriter.setColor(j, i, color);
+                }
+            }
+        }
+        return writableImage;
     }
 }

@@ -431,7 +431,6 @@ public class Terminal implements WindowActivator {
                         //Уберем отображение объекта
                         System.out.println(sc.getId() + " was removed");
                         if (paramsChanged()){
-                            System.out.println("HERE");
                             drawGrid();
                             setBounds();
                             redrawAllCities();
@@ -444,7 +443,6 @@ public class Terminal implements WindowActivator {
                         //Нарисуем объект с нуля
                         System.out.println(sc.getId() + " was added");
                         if (paramsChanged()){
-                            System.out.println("here");
                             drawGrid();
                             setBounds();
                             redrawAllCities();
@@ -465,7 +463,6 @@ public class Terminal implements WindowActivator {
 
         updateThreadFlag = true;
         updateThread = new Thread(() ->{
-            boolean firstLoad = true;
             CityTree tempCityTree;
             TreeSet<Long> tempIDSet = new TreeSet<>();
 
@@ -528,7 +525,7 @@ public class Terminal implements WindowActivator {
                                 }
                             }else {
                                 cityTree.add(tempCity);
-                                coordinatesObservableList.add(new SmartCoordinates(tempCity.getId(), tempCity.getX(), tempCity.getY(), username));
+                                coordinatesObservableList.add(new SmartCoordinates(tempCity.getId(), tempCity.getX(), tempCity.getY(), tempCity.getOwner()));
                             }
                         }
 
