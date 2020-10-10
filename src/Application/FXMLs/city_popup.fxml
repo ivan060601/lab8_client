@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="420.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <GridPane hgap="3.0" layoutX="14.0" layoutY="14.0" prefHeight="342.0" prefWidth="312.0" vgap="5.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="155.20001220703125" minWidth="10.0" prefWidth="139.19998779296876" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="218.4000244140625" minWidth="10.0" prefWidth="172.0000122070313" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="51.2" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            
+        </rowConstraints>
+         <children>
+            <Text fx:id="name_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Название" wrappingWidth="80.53673934936523">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="population_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Население" wrappingWidth="80.53673934936523" GridPane.rowIndex="1">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="X - координата" GridPane.rowIndex="2" fx:id="x_coordinate_text">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="y_coordinate_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Y - координата" GridPane.rowIndex="3">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="zone_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Зона" GridPane.rowIndex="4">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="meters_above_sealevel_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Метров над уровнем моря" wrappingWidth="102.6107177734375" GridPane.rowIndex="5">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="est_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Дата основания" GridPane.rowIndex="6">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="carcode_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Номер региона" GridPane.rowIndex="7">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="SOF_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Уровень жизни" GridPane.rowIndex="8">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <Text fx:id="human_birthday_text" strokeType="OUTSIDE" strokeWidth="0.0" text="ДР градоначальника" GridPane.rowIndex="9">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <DatePicker fx:id="est_date" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <DatePicker fx:id="human_birthday_field" disable="true" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <ChoiceBox fx:id="SOF_field" disable="true" prefHeight="26.0" prefWidth="175.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <TextField fx:id="name_field" editable="false" GridPane.columnIndex="1" />
+            <TextField fx:id="population_field" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="x_field" />
+            <TextField fx:id="y_field" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="zone_field" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <TextField fx:id="meters_above_sealevel_field" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <TextField fx:id="carcode_field" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+         </children>
+      </GridPane>
+      <FlowPane layoutX="281.0" layoutY="367.0" prefHeight="38.0" prefWidth="58.0">
+         <children>
+            <Button fx:id="OK_button" mnemonicParsing="false" onAction="#ok_button_clicked" text="ОК">
+               <FlowPane.margin>
+                  <Insets left="5.0" top="5.0" />
+               </FlowPane.margin>
+            </Button>
+         </children>
+      </FlowPane>
+   </children>
+</AnchorPane>

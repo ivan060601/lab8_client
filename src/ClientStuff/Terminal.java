@@ -8,7 +8,6 @@ import CityStructure.Human;
 import CityStructure.StandardOfLiving;
 import javafx.beans.Observable;
 import javafx.collections.*;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -17,22 +16,17 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Callback;
-import org.apache.commons.lang3.SerializationException;
 
-import javax.management.timer.TimerMBean;
-import java.awt.geom.Arc2D;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class Terminal implements WindowActivator {
@@ -109,7 +103,6 @@ public class Terminal implements WindowActivator {
     private String wrongBDFormat = "Wrong birthday format";
     private String enterFilter = "Enter filter";
     private String serverUnreachable = "Server unreachable";
-    //private final Image image = new Image("Application/isu_naelsya.png");
 
     //Все переменные для окна визуализации
     private String noCities = "No available cities to show";
@@ -385,6 +378,35 @@ public class Terminal implements WindowActivator {
     }
 
     @FXML
+    public void showCityCard(MouseEvent mouseEvent) {
+        AtomicBoolean shown = new AtomicBoolean(false);
+        double mouseX = mouseEvent.getX();
+        double mouseY = mouseEvent.getY();
+        coordinatesObservableList.stream().forEach(coordinates -> {
+            if (mouseX > XtoCanvasCoordinates(coordinates.getX()) && mouseX < XtoCanvasCoordinates(coordinates.getX()+30)){
+                if (mouseY > YtoCanvasCoordinates(coordinates.getY()) && mouseY < YtoCanvasCoordinates(coordinates.getY() + 30) && !shown.get()){
+                    shown.set(true);
+                    if(serverFlag) {
+                        Stage smallStage = new Stage();
+                        SceneController smallSceneController = new SceneController(smallStage);
+                        CityCardWindowManager cityCardWindowManager = new CityCardWindowManager(cityTree.getCityByID(coordinates.getId()), smallStage);
+                        smallSceneController.loadWithController(cityCardWindowManager, "City card", "/Application/FXMLs/city_popup.fxml");
+                        smallStage.setScene(smallSceneController.getScene("City card"));
+                        smallStage.setResizable(false);
+                        smallStage.setTitle("City card");
+                        smallStage.setHeight(450);
+                        smallStage.setWidth(350);
+                        smallStage.show();
+                        smallStage.setOnCloseRequest(event -> smallSceneController.removeScene("City card"));
+                    }else {
+                        logout();
+                    }
+                }
+            }
+        });
+    }
+
+    @FXML
     public void initialize(){
         changeLanguage();
         username_text.setText(username);
@@ -546,7 +568,7 @@ public class Terminal implements WindowActivator {
 
     public int YtoCanvasCoordinates(double y){
         //из формулы ((Input - InputLow) / (InputHigh - InputLow)) * (OutputHigh - OutputLow) + OutputLow
-        return (int) (((y-Y_MAX_COORDINATE)/(Y_MIN_COORDINATE-Y_MAX_COORDINATE))*(CANVAS_HEIGHT));
+        return (int) (((y-Y_MIN_COORDINATE)/(Y_MAX_COORDINATE-Y_MIN_COORDINATE))*(CANVAS_HEIGHT));
     }
 
     private int getIndexByID(long id){
@@ -560,7 +582,7 @@ public class Terminal implements WindowActivator {
 
     private void drawCity(SmartCoordinates coordinates){
         visualisation_canvas.getGraphicsContext2D().drawImage(coordinates.getImage(), XtoCanvasCoordinates(coordinates.getX()), YtoCanvasCoordinates(coordinates.getY()));
-        System.out.println("new coordinates for "+coordinates.getId()+" are: \n x: "+XtoCanvasCoordinates(coordinates.getX())+"\n y: "+YtoCanvasCoordinates(coordinates.getY()));
+        //System.out.println("new coordinates for "+coordinates.getId()+" are: \n x: "+XtoCanvasCoordinates(coordinates.getX())+"\n y: "+YtoCanvasCoordinates(coordinates.getY()));
     }
 
     private void redrawAllCities(){
@@ -619,22 +641,22 @@ public class Terminal implements WindowActivator {
     private void setBounds() {
         if (cityTree.size() > 1) {
             double stepY = ((Y_MAX_COORDINATE - Y_MIN_COORDINATE) / 6);
-            y1.setText(String.format("%.2f", Y_MIN_COORDINATE + stepY));
-            y2.setText(String.format("%.2f", Y_MIN_COORDINATE + 2 * stepY));
-            y3.setText(String.format("%.2f", Y_MIN_COORDINATE + 3 * stepY));
-            y4.setText(String.format("%.2f", Y_MIN_COORDINATE + 4 * stepY));
-            y5.setText(String.format("%.2f", Y_MIN_COORDINATE + 5 * stepY));
-            y6.setText(String.format("%.2f", Y_MIN_COORDINATE + 6 * stepY));
+            y1.setText(String.format("%.1f", Y_MIN_COORDINATE + stepY));
+            y2.setText(String.format("%.1f", Y_MIN_COORDINATE + 2 * stepY));
+            y3.setText(String.format("%.1f", Y_MIN_COORDINATE + 3 * stepY));
+            y4.setText(String.format("%.1f", Y_MIN_COORDINATE + 4 * stepY));
+            y5.setText(String.format("%.1f", Y_MIN_COORDINATE + 5 * stepY));
+            y6.setText(String.format("%.1f", Y_MIN_COORDINATE + 6 * stepY));
 
             float stepX = (X_MAX_COORDINATE - X_MIN_COORDINATE) / 9;
-            x1.setText(String.format("%.2f", X_MIN_COORDINATE + stepX));
-            x2.setText(String.format("%.2f", X_MIN_COORDINATE + 2 * stepX));
-            x3.setText(String.format("%.2f", X_MIN_COORDINATE + 3 * stepX));
-            x4.setText(String.format("%.2f", X_MIN_COORDINATE + 4 * stepX));
-            x5.setText(String.format("%.2f", X_MIN_COORDINATE + 5 * stepX));
-            x6.setText(String.format("%.2f", X_MIN_COORDINATE + 6 * stepX));
-            x7.setText(String.format("%.2f", X_MIN_COORDINATE + 7 * stepX));
-            x8.setText(String.format("%.2f", X_MIN_COORDINATE + 8 * stepX));
+            x1.setText(String.format("%.1f", X_MIN_COORDINATE + stepX));
+            x2.setText(String.format("%.1f", X_MIN_COORDINATE + 2 * stepX));
+            x3.setText(String.format("%.1f", X_MIN_COORDINATE + 3 * stepX));
+            x4.setText(String.format("%.1f", X_MIN_COORDINATE + 4 * stepX));
+            x5.setText(String.format("%.1f", X_MIN_COORDINATE + 5 * stepX));
+            x6.setText(String.format("%.1f", X_MIN_COORDINATE + 6 * stepX));
+            x7.setText(String.format("%.1f", X_MIN_COORDINATE + 7 * stepX));
+            x8.setText(String.format("%.1f", X_MIN_COORDINATE + 8 * stepX));
         } else {
             y1.setText("");
             y2.setText("");

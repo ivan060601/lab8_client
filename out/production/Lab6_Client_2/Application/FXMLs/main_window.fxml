@@ -122,7 +122,7 @@
             <content>
               <AnchorPane fx:id="visual_group">
                      <children>
-                        <Canvas fx:id="visualisation_canvas" height="440.0" width="720.0" />
+                        <Canvas fx:id="visualisation_canvas" height="440.0" onMouseClicked="#showCityCard" width="720.0" />
                         <Text fx:id="y1" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y1" wrappingWidth="41.90155029296875" />
                         <Text fx:id="y2" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y2" wrappingWidth="50.40000000000032" />
                         <Text fx:id="y3" layoutY="198.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y3" wrappingWidth="56.53675842285156" />
