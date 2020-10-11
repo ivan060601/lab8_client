@@ -448,6 +448,9 @@ public class Terminal implements WindowActivator {
                             redrawAllCities();
                         }else {
                             drawCity(sc);
+                            drawGrid();
+                            setBounds();
+                            redrawAllCities();
                         }
                     }
                 }
@@ -578,8 +581,23 @@ public class Terminal implements WindowActivator {
     }
 
     private void drawCity(SmartCoordinates coordinates){
-        visualisation_canvas.getGraphicsContext2D().drawImage(coordinates.getImage(), XtoCanvasCoordinates(coordinates.getX()), YtoCanvasCoordinates(coordinates.getY()));
-        //System.out.println("new coordinates for "+coordinates.getId()+" are: \n x: "+XtoCanvasCoordinates(coordinates.getX())+"\n y: "+YtoCanvasCoordinates(coordinates.getY()));
+        if (coordinates.toRedraw()){
+            for (double i = 0; i <= 1; i = i + 0.01){
+                drawCityWithOpacity(coordinates, i);
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            coordinates.setRedraw(false);
+        }else {
+            visualisation_canvas.getGraphicsContext2D().drawImage(coordinates.getImage(), XtoCanvasCoordinates(coordinates.getX()), YtoCanvasCoordinates(coordinates.getY()));
+        }
+    }
+
+    private void drawCityWithOpacity(SmartCoordinates coordinates, double opacity){
+        visualisation_canvas.getGraphicsContext2D().drawImage(coordinates.getTransparentImage(opacity), XtoCanvasCoordinates(coordinates.getX()), YtoCanvasCoordinates(coordinates.getY()));
     }
 
     private void redrawAllCities(){
@@ -587,7 +605,19 @@ public class Terminal implements WindowActivator {
     }
 
     private void removeCity(SmartCoordinates coordinates){
-
+        for (double i = 1; i > 0; i = i - 0.01){
+            for (SmartCoordinates coordinates1 : coordinatesObservableList){
+                drawCity(coordinates1);
+            }
+            drawCityWithOpacity(coordinates, i);
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            drawGrid();
+        }
+        redrawAllCities();
     }
 
     private void redrawCity(SmartCoordinates coordinates){

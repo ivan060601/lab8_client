@@ -15,7 +15,7 @@ public class SmartCoordinates {
     private FloatProperty x;
     private DoubleProperty y;
     private Color color;
-    private boolean redraw = false;
+    private boolean redraw = true;
     private Image image = new Image("/Application/Transparent_white.png");
 
     public SmartCoordinates(float x, double y, String name) {
@@ -111,4 +111,21 @@ public class SmartCoordinates {
         }
         return writableImage;
     }
+
+    public Image getTransparentImage(double opacity){
+        WritableImage writableImage = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        PixelReader pixelReader = writableImage.getPixelReader();
+        for (int i = 0; i < writableImage.getHeight(); i++) {
+            for (int j = 0; j < writableImage.getWidth(); j++) {
+                Color newColor = Color.color(color.getRed(), color.getGreen(), color.getGreen(), opacity);
+                Color c = pixelReader.getColor(j, i);
+                if (c.getRed() > 0 || c.getGreen() > 0 || c.getBlue() > 0) {
+                    pixelWriter.setColor(i, j, newColor);
+                }
+            }
+        }
+        return writableImage;
+    }
+
 }
