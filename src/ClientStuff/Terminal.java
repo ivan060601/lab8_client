@@ -227,7 +227,7 @@ public class Terminal implements WindowActivator {
                     smallStage.setWidth(350);
                     smallStage.show();
                 }else {
-                    makeNotification("City not found", "City with such ID was not found");
+                    makeNotification("City not found", "City with such ID was not found in your collection");
                 }
             }catch (NumberFormatException | NullPointerException e){
                 makeAlert(invalidID, invalidID);
@@ -420,9 +420,19 @@ public class Terminal implements WindowActivator {
                     for (int i = c.getFrom(); i < c.getTo(); ++i) {
                         System.out.println(coordinatesObservableList.get(i).getId() + " was updated");
                         if (paramsChanged()){
+                            coordinatesObservableList.get(i).setRedraw(true);
+                            drawGrid();
                             setBounds();
-                            redrawCity(coordinatesObservableList.get(i));
+                            redrawAllCities();
+                            drawCity(coordinatesObservableList.get(i));
+                            drawGrid();
+                            setBounds();
+                            redrawAllCities();
                         }else {
+                            coordinatesObservableList.get(i).setRedraw(true);
+                            drawCity(coordinatesObservableList.get(i));
+                            drawGrid();
+                            setBounds();
                             redrawAllCities();
                         }
                     }
@@ -431,6 +441,7 @@ public class Terminal implements WindowActivator {
                         //Уберем отображение объекта
                         System.out.println(sc.getId() + " was removed");
                         if (paramsChanged()){
+                            removeCity(sc);
                             drawGrid();
                             setBounds();
                             redrawAllCities();
@@ -443,6 +454,10 @@ public class Terminal implements WindowActivator {
                         //Нарисуем объект с нуля
                         System.out.println(sc.getId() + " was added");
                         if (paramsChanged()){
+                            drawGrid();
+                            setBounds();
+                            redrawAllCities();
+                            drawCity(sc);
                             drawGrid();
                             setBounds();
                             redrawAllCities();
@@ -466,6 +481,7 @@ public class Terminal implements WindowActivator {
 
         updateThreadFlag = true;
         updateThread = new Thread(() ->{
+            boolean firstLoad = true;
             CityTree tempCityTree;
             TreeSet<Long> tempIDSet = new TreeSet<>();
 
@@ -497,13 +513,16 @@ public class Terminal implements WindowActivator {
                                 }
 
                                 if (!Float.valueOf(city.getX()).equals(Float.valueOf(tempCity.getX())) && !Double.valueOf(city.getY()).equals(Double.valueOf(tempCity.getY()))){
+                                    removeCityWithoutTouchingItself(coordinatesObservableList.get(getIndexByID(city.getId())));
                                     city.getCoordinates().setX(tempCity.getX());
                                     city.getCoordinates().setY(tempCity.getY());
                                     coordinatesObservableList.get(getIndexByID(city.getId())).setXY(tempCity.getX(), tempCity.getY());
                                 }else if (!Float.valueOf(city.getX()).equals(Float.valueOf(tempCity.getX()))){
+                                    removeCityWithoutTouchingItself(coordinatesObservableList.get(getIndexByID(city.getId())));
                                     city.getCoordinates().setX(tempCity.getX());
                                     coordinatesObservableList.get(getIndexByID(city.getId())).setX(tempCity.getX());
                                 }else if (!Double.valueOf(city.getY()).equals(Double.valueOf(tempCity.getY()))){
+                                    removeCityWithoutTouchingItself(coordinatesObservableList.get(getIndexByID(city.getId())));
                                     city.getCoordinates().setY(tempCity.getY());
                                     coordinatesObservableList.get(getIndexByID(city.getId())).setY(tempCity.getY());
                                 }
@@ -529,10 +548,14 @@ public class Terminal implements WindowActivator {
                             }else {
                                 cityTree.add(tempCity);
                                 coordinatesObservableList.add(new SmartCoordinates(tempCity.getId(), tempCity.getX(), tempCity.getY(), tempCity.getOwner()));
+                                if (firstLoad){
+                                    observableList.add(tempCity);
+                                }
                             }
                         }
 
                         //Фильтруем коллекцию для показа в таблице и в визуализации по именному фильтру
+                        firstLoad = false;
                         observableList.clear();
                         cityTree.stream().filter(city -> city.getName().startsWith(FILTER)).collect(Collectors.toCollection(()->observableList));
                         IDSet.clear();
@@ -620,8 +643,26 @@ public class Terminal implements WindowActivator {
         redrawAllCities();
     }
 
-    private void redrawCity(SmartCoordinates coordinates){
+    private void removeCityWithoutTouchingItself(SmartCoordinates coordinates){
+        for (double i = 1; i > 0; i = i - 0.01){
+            for (SmartCoordinates coordinates1 : coordinatesObservableList){
+                if (coordinates.getId() != coordinates1.getId()) {
+                    drawCity(coordinates1);
+                }
+            }
+            drawCityWithOpacity(coordinates, i);
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            drawGrid();
+        }
+        coordinatesObservableList.stream().filter(coordinates1 -> coordinates1.getId()!=coordinates.getId()).forEach(coordinates1 -> drawCity(coordinates1));
+    }
 
+    private void redrawCity(SmartCoordinates coordinates){
+        removeCity(coordinates);
     }
 
     private boolean paramsChanged(){
