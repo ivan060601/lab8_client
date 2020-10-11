@@ -9,32 +9,46 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * Класс, хранящий в себе коллекцию сцен и их контроллеров
+ */
 public class SceneController {
     private HashMap<String, Scene> sceneMap = new HashMap<>();
     private Stage stage;
-    //private FXMLLoader loader = new FXMLLoader();
 
     public SceneController(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Добавить сцену
+     * @param name имя сцены
+     * @param scene сама сцена
+     */
     public void addScene(String name, Scene scene){
         sceneMap.put(name, scene);
     }
 
+    /**
+     * Достать сцену по имени
+     */
     public Scene getScene(String name){
         return sceneMap.get(name);
     }
 
-    public void removeScene(String name){
+    /**
+     *Удалить сцену по имени
+     */
+    public void removeScene(String name) {
         sceneMap.remove(name);
     }
 
-    public void activate(String name){
-        stage.setScene(sceneMap.get(name));
-        stage.setTitle(name);
-    }
-
+    /**
+     * Загрузить сцену с необходимым контроллером
+     * @param controller контроллек
+     * @param name имя сцены
+     * @param path путь к FXML
+     */
     public void loadWithController(Object controller, String name, String path){
         FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
         loader.setController(controller);

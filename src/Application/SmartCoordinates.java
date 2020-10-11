@@ -7,6 +7,9 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 
+/**
+ * Класс, хранящий в себе только необходимые для отрисовки коллекции поля
+ */
 public class SmartCoordinates {
     private long id;
     private FloatProperty x;
@@ -15,12 +18,12 @@ public class SmartCoordinates {
     private boolean redraw = true;
     private Image image = new Image("/Application/Transparent_white.png");
 
-    public SmartCoordinates(float x, double y, String name) {
-        this.x = new SimpleFloatProperty(x);
-        this.y = new SimpleDoubleProperty(y);
-        makeColour(name);
-    }
-
+    /**
+     * @param id ID города
+     * @param x координата X города
+     * @param y координата Y города
+     * @param name имя создателя города
+     */
     public SmartCoordinates(long id, float x, double y, String name) {
         this.id = id;
         this.x = new SimpleFloatProperty(x);
@@ -28,6 +31,10 @@ public class SmartCoordinates {
         makeColour(name);
     }
 
+    /**
+     * Метод генерации уникального цвета для каждого пользователя
+     * @param name имя пользователя
+     */
     private void makeColour(String name){
         //из формулы ((Input - InputLow) / (InputHigh - InputLow)) * (OutputHigh - OutputLow) + OutputLow
         float h = (name.hashCode() % 1000) * 360/(999);
@@ -61,14 +68,6 @@ public class SmartCoordinates {
         this.y.set(y);
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
     public boolean toRedraw() {
         return redraw;
     }
@@ -94,6 +93,10 @@ public class SmartCoordinates {
         return image;
     }
 
+    /**
+     * Метод, меняющий цвет картинки попиксельно
+     * @return картинка с измененным цветом
+     */
     private Image changeColour(){
         WritableImage writableImage = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
         PixelWriter pixelWriter = writableImage.getPixelWriter();
@@ -109,6 +112,11 @@ public class SmartCoordinates {
         return writableImage;
     }
 
+    /**
+     * Метод, добавляющий прозрачности к картинке
+     * @param opacity непрозрачность
+     * @return картинка с заданной opacity
+     */
     public Image getTransparentImage(double opacity){
         WritableImage writableImage = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
         PixelWriter pixelWriter = writableImage.getPixelWriter();

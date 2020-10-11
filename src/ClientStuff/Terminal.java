@@ -130,6 +130,9 @@ public class Terminal implements WindowActivator {
         updater.setEverything("show", null);
     }
 
+    /**
+     * Метод для смены языка
+     */
     @FXML
     public void changeLanguage(ActionEvent actionEvent) {
         Object menuItem = actionEvent.getSource();
@@ -147,7 +150,7 @@ public class Terminal implements WindowActivator {
         changeLanguage();
     }
 
-    public void changeLanguage(){
+    private void changeLanguage(){
         ResourceBundle newBundle = Localizator.changeLocale("Application.Locale.MainWindow.MainResources", Locale.getDefault());
 
         invalidID = (String) newBundle.getObject("Invalid ID");
@@ -160,6 +163,9 @@ public class Terminal implements WindowActivator {
         visualisation_tab.setText((String) newBundle.getObject("Visualisation"));
     }
 
+    /**
+     * Реализация отправки и обработки команды help
+     */
     @FXML
     public void command_help_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -172,6 +178,9 @@ public class Terminal implements WindowActivator {
         redrawAllCities();
     }
 
+    /**
+     * Реализация отправки и обработки команды info
+     */
     @FXML
     public void command_info_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -183,6 +192,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды add
+     */
     @FXML
     public void command_add_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -202,6 +214,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды update
+     */
     @FXML
     public void command_update_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -238,6 +253,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды remove
+     */
     @FXML
     public void command_remove_execute(ActionEvent actionEvent) {
         if(serverFlag){
@@ -253,6 +271,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды clear
+     */
     @FXML
     public void command_clear_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -264,6 +285,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды execute_script
+     */
     @FXML
     public void command_execute_script_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -278,6 +302,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды add_if_max
+     */
     @FXML
     public void command_add_if_max_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -297,6 +324,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды remove_lower
+     */
     @FXML
     public void command_remove_lower_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -316,6 +346,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды history
+     */
     @FXML
     public void command_history_execute(ActionEvent actionEvent) {
         if(serverFlag) {
@@ -327,6 +360,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды remove_any_by_governor
+     */
     @FXML
     public void command_remove_any_by_governor_execute(ActionEvent actionEvent) {
         Human governor;
@@ -348,6 +384,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Реализация отправки и обработки команды filter_starts_with_name
+     */
     @FXML
     public void command_filter_name_execute(ActionEvent actionEvent) {
         String tempString = makeTextDialogue("Filter starts with name", enterFilter);
@@ -356,6 +395,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Обработка нажатия на кнопку выхода
+     */
     @FXML
     public void logout(ActionEvent actionEvent) {
         client.getMainStage().setScene(sceneController.getScene("Connection"));
@@ -367,7 +409,7 @@ public class Terminal implements WindowActivator {
     }
 
 
-    public void logout() {
+    private void logout() {
         makeAlert(serverUnreachable, "");
         client.getMainStage().setScene(sceneController.getScene("Connection"));
         client.getMainStage().setWidth(300);
@@ -377,6 +419,9 @@ public class Terminal implements WindowActivator {
         updateThreadFlag = false;
     }
 
+    /**
+     * Обработка нажатия на Canvas чтобы показать карточку с информацией о городе
+     */
     @FXML
     public void showCityCard(MouseEvent mouseEvent) {
         AtomicBoolean shown = new AtomicBoolean(false);
@@ -414,6 +459,9 @@ public class Terminal implements WindowActivator {
         drawGrid();
         setBounds();
 
+        /**
+         * Добавление Listener, чтобы знать, когда меняются/добавляются/удаляются города
+         */
         coordinatesObservableList.addListener((ListChangeListener<SmartCoordinates>) c -> {
             while (c.next()) {
                 if (c.wasUpdated()) {
@@ -480,6 +528,9 @@ public class Terminal implements WindowActivator {
         CANVAS_WIDTH = visualisation_canvas.getWidth() - 20;
 
         updateThreadFlag = true;
+        /**
+         * Запуск отдельного потока для получения актуальной коллекции с сервера
+         */
         updateThread = new Thread(() ->{
             boolean firstLoad = true;
             CityTree tempCityTree;
@@ -583,12 +634,21 @@ public class Terminal implements WindowActivator {
         main_table.setItems(observableList);
     }
 
-
+    /**
+     * Метод для конвертации координаты X города в координату на Canvas'е
+     * @param x координата на карте
+     * @return координата на Canvas'е
+     */
     public int XtoCanvasCoordinates(float x){
         //из формулы ((Input - InputLow) / (InputHigh - InputLow)) * (OutputHigh - OutputLow) + OutputLow
         return (int) (((x-X_MIN_COORDINATE)/(X_MAX_COORDINATE-X_MIN_COORDINATE))*(CANVAS_WIDTH));
     }
 
+    /**
+     * Метод для конвертации координаты Y города в координату на Canvas'е
+     * @param y координата на карте
+     * @return координата на Canvas'е
+     */
     public int YtoCanvasCoordinates(double y){
         //из формулы ((Input - InputLow) / (InputHigh - InputLow)) * (OutputHigh - OutputLow) + OutputLow
         return (int) (((y-Y_MIN_COORDINATE)/(Y_MAX_COORDINATE-Y_MIN_COORDINATE))*(CANVAS_HEIGHT));
@@ -603,6 +663,10 @@ public class Terminal implements WindowActivator {
         return -1;
     }
 
+    /**
+     * Метод для отрисовки города на Canvas'е
+     * @param coordinates координаты города
+     */
     private void drawCity(SmartCoordinates coordinates){
         if (coordinates.toRedraw()){
             for (double i = 0; i <= 1; i = i + 0.01){
@@ -619,14 +683,29 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Метод для отрисовки города на Canvas'е, но с эффектом прозрачности
+     * @param coordinates координаты
+     * @param opacity непрозрачность
+     */
     private void drawCityWithOpacity(SmartCoordinates coordinates, double opacity){
         visualisation_canvas.getGraphicsContext2D().drawImage(coordinates.getTransparentImage(opacity), XtoCanvasCoordinates(coordinates.getX()), YtoCanvasCoordinates(coordinates.getY()));
     }
 
+    /**
+     * Метод, перересовывающий все города из коллекции
+     * Наличие анимации при отрисовке зависит от флага redraw в SmartCoordinates
+     */
     private void redrawAllCities(){
         coordinatesObservableList.stream().forEach(coordinates -> drawCity(coordinates));
     }
 
+    /**
+     * Метод для отрисовки анимации удаления города
+     * redrawAllCities() в конце работает, т.к. coordinatesObservableList уже не содержит coordinates,
+     * переданных в аргументах
+     * @param coordinates координаты
+     */
     private void removeCity(SmartCoordinates coordinates){
         for (double i = 1; i > 0; i = i - 0.01){
             for (SmartCoordinates coordinates1 : coordinatesObservableList){
@@ -643,6 +722,11 @@ public class Terminal implements WindowActivator {
         redrawAllCities();
     }
 
+    /**
+     * Аналог removeCity, но в конце при перерисовке всех элементов коллекции coordinates
+     * будут проигнорированы и не отрисованы заново
+     * @param coordinates координаты
+     */
     private void removeCityWithoutTouchingItself(SmartCoordinates coordinates){
         for (double i = 1; i > 0; i = i - 0.01){
             for (SmartCoordinates coordinates1 : coordinatesObservableList){
@@ -661,10 +745,10 @@ public class Terminal implements WindowActivator {
         coordinatesObservableList.stream().filter(coordinates1 -> coordinates1.getId()!=coordinates.getId()).forEach(coordinates1 -> drawCity(coordinates1));
     }
 
-    private void redrawCity(SmartCoordinates coordinates){
-        removeCity(coordinates);
-    }
-
+    /**
+     * Метод для установки крайних точек на Canvas'е в реальных координатах(не пикселях)
+     * @return изменились ли крайние точки
+     */
     private boolean paramsChanged(){
         float prevX_MAX_COORDINATE = X_MAX_COORDINATE;
         double prevY_MAX_COORDINATE = Y_MAX_COORDINATE;
@@ -686,6 +770,9 @@ public class Terminal implements WindowActivator {
         return true;
     }
 
+    /**
+     * Метод для отрисовки сетки
+     */
     private void drawGrid(){
         GraphicsContext gc = visualisation_canvas.getGraphicsContext2D();
         gc.clearRect(0,0,visualisation_canvas.getWidth(),visualisation_canvas.getHeight());
@@ -706,6 +793,9 @@ public class Terminal implements WindowActivator {
         }
     }
 
+    /**
+     * Метод, задающий подписи к сетке
+     */
     private void setBounds() {
         if (cityTree.size() > 1) {
             double stepY = ((Y_MAX_COORDINATE - Y_MIN_COORDINATE) / 6);
